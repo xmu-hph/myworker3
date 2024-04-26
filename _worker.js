@@ -1,33 +1,35 @@
 // <!--GAMFC-->version base on commit 43fad05dcdae3b723c53c226f8181fc5bd47223e, time is 2023-06-22 15:20:02 UTC<!--GAMFC-END-->.
 // @ts-ignore
 import { connect } from 'cloudflare:sockets';
+import { schedule } from '@cloudflare/workers';
+
 let userID = 'fcc3e3d8-9fd7-4e6d-9d43-2174ae3e2790';
 let https_proxyIPs = [];
 let http_proxyIPs = [];
-//const proxyIPs = ['workers.bestip.one','cdn.xn--b6gac.eu.org', 'cdn-all.xn--b6gac.eu.org', 'edgetunnel.anycast.eu.org'];
-let proxyIP = 'edgetunnel.anycast.eu.org';
-
+let proxyIP = 'cdn-all.xn--b6gac.eu.org';
 let dohURL = 'https://sky.rethinkdns.com/1:-Pf_____9_8A_AMAIgE8kMABVDDmKOHTAKg=';
-
-// 定义要下载的文件 URL
 let myurl = 'https://zip.baipiao.eu.org/31898-1-443.txt';
-//https://ipdb.api.030101.xyz/?type=bestproxy&country=#jp&port=8443
-//https://zip.baipiao.eu.org/31898-1-8443.txt/45102
-//https://ipdb.api.030101.xyz/?type=bestcf
-
-// 下载压缩文件
 async function downloadFile() {
   const myfile = await fetch(myurl);
-	const text = await myfile.text();
+  const text = await myfile.text();
   let https_proxyIPs = [];
   const lines = text.split('\n');
-	let size=20;
+  let size=19;
   for(let i=1;i<size;i++){
-    https_proxyIPs.push(lines[Math.floor(lines.length*i/size)]);
+	https_proxyIPs.push(lines[Math.floor(lines.length*i/size)]);
   }
-
-	return https_proxyIPs;
+  return https_proxyIPs;
 }
+
+// Run the downloadFile function every 24 hours
+schedule.every('12h', async () => {
+  try {
+    https_proxyIPs = await downloadFile();
+    // Process the proxy IP addresses as needed
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 if (!isValidUUID(userID)) {
 	throw new Error('uuid is invalid');
@@ -53,7 +55,7 @@ export default {
 			if (userID.includes(',')) {
 				userID_Path = userID.split(',')[0];
 			}
-			https_proxyIPs = await downloadFile();
+			//https_proxyIPs = await downloadFile();
 			const upgradeHeader = request.headers.get('Upgrade');
 			if (!upgradeHeader || upgradeHeader !== 'websocket') {
 				const url = new URL(request.url);
