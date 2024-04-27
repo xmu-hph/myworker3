@@ -1,4 +1,5 @@
 from js import Response
 
-def on_fetch(request):
-    return Response.new("Hello World!")
+async def on_fetch(request):
+    name = (await request.json()).name
+    return Response.new(name)
