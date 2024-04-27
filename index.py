@@ -1,5 +1,6 @@
-from js import Response
+def handleRequest(request):
+    return __new__(Response('Python Worker hello world!', {
+        'headers' : { 'content-type' : 'text/plain' }
+    }))
 
-async def on_fetch(request):
-    name = (await request.json()).name
-    return Response.new(name)
+addEventListener('fetch', (lambda event: event.respondWith(handleRequest(event.request))))
