@@ -1,17 +1,13 @@
 {
-	"name": "worker-python",
-	"version": "1.0.0",
-	"description": "Python hello world for Cloudflare Workers",
-	"keywords": [],
-	"license": "MIT",
-	"author": "",
-	"main": "index.js",
+	"private": true,
+	"version": "0.0.0",
 	"scripts": {
-		"build": "webpack -c webpack.config.js"
+		"deploy": "wrangler publish index.js",
+		"dev": "wrangler dev index.js --local",
+		"test": "vitest"
 	},
 	"devDependencies": {
-		"transcrypt-loader": "^1.0.2",
-		"webpack": "^5.72.1",
-		"webpack-cli": "^4.9.2"
+		"vitest": "^0.24.5",
+		"wrangler": "^2.0.0"
 	}
 }
